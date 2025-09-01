@@ -1,0 +1,29 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: ./dockerfile
+    container_name: backend_service
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./server:/app/server
+      - ./domain:/app/domain
+      - ./package.json:/app/package.json
+      - ./tsconfig.json:/app/tsconfig.json
+    env_file:
+      - ./server/src/.env
+    environment:
+      NODE_ENV: development
+      
+  frontend:
+    build: ./client
+    container_name: frontend_service
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client:/client
+      - ./domain:/domain
+      - /node_modules
+    depends_on:
+      - backend
