@@ -12,7 +12,7 @@ services:
       - ./package.json:/app/package.json
       - ./tsconfig.json:/app/tsconfig.json
     env_file:
-      - ./server/src/.env
+      - ./server/src/environments/.env.development
     environment:
       NODE_ENV: development
       
