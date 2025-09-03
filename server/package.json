@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon --watch src --exec ts-node-dev server.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:create": "sequelize db:create && sequelize db:migrate && sequelize db:seed:all",
     "db:reset": "sequelize db:drop && npm run db:create"
@@ -28,6 +29,7 @@
     "@types/express": "^5.0.3",
     "@types/morgan": "^1.9.10",
     "@types/sequelize": "^4.28.20",
+    "ts-node-dev": "^2.0.0",
     "vitest": "^3.2.4"
   }
 }
