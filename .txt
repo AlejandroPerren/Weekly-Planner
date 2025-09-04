@@ -1,1 +1,3 @@
 tabla intermedia con datos de la tarea, ejem referencias a buscar links importantes a no perder y algun otra cosa como investigar esto o buscar esto
+
+modificar el docker compose para que cree una base de datos mejor y mas especifica
