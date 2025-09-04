@@ -11,7 +11,7 @@ COPY server/package*.json ./server/
 WORKDIR /app/server
 RUN npm install
 
-RUN npm install -g nodemon ts-node
+RUN npm install -g nodemon ts-node ts-node-dev
 
 EXPOSE 4000
 

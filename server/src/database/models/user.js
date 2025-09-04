@@ -10,11 +10,30 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      User.hasMany(models.Task, {
+    foreignKey: "createdBy", 
+    as: "tasks"              
+  });
     }
   }
   User.init({
-    name: DataTypes.STRING
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+  },
+    dni: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      primaryKey: true,
+  },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+  },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+  },
   }, {
     sequelize,
     modelName: 'User',
