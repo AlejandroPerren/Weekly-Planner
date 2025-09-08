@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 import { Task } from "entities/Task";
 import { TaskRepository } from "services/TaskRepository";
 
@@ -33,16 +34,16 @@ export function createTaskRepositoryMock(
         createdBy: creatorId,
         ...task,
       };
+      this.tasks.push(newTask);
       return newTask;
     },
-    updateTask: async function (taskId:number, task: Task): Promise<Task> {
-      const index = this.tasks.findIndex((task) => task.id === taskId);
-      if (index !== -1) {
-        this.tasks[index] = task;
-      }
-      return task;
-    },
-    deleteTask: async function (taskId:number): Promise<void> {
+    updateTask: vi.fn(async (id: number, task: Task) => {
+      const index = tasks.findIndex((t) => t.id === id);
+      if (index === -1) throw new Error("NotFoundError"); 
+      tasks[index] = { ...tasks[index], ...task };
+      return tasks[index];
+    }),
+    deleteTask: async function (taskId: number): Promise<void> {
       const index = this.tasks.findIndex((task) => task.id === taskId);
       if (index !== -1) {
         this.tasks.splice(index, 1);
