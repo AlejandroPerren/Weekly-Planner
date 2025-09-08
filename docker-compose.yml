@@ -21,15 +21,6 @@ services:
     container_name: backend_app
     ports:
       - "4000:4000"
-    volumes:
-      - ./server:/app/server          
-      - ./domain:/app/domain          
-      - /app/server/node_modules     
-    env_file:
-      - ./server/src/environments/.env
-      - ./server/src/environments/.env.development
-    environment:
-      NODE_ENV: development
     depends_on:
       - db
 
@@ -40,13 +31,6 @@ services:
     container_name: frontend_app
     ports:
       - "5173:5173"
-    volumes:
-      - ./client:/client
-      - ./domain:/domain
-      - /client/node_modules           
-    environment:
-      - CHOKIDAR_USEPOLLING=true       
-      - HOST=0.0.0.0                   
     depends_on:
       - backend
 

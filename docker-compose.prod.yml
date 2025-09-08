@@ -1,0 +1,10 @@
+services:
+  backend:
+    env_file:
+      - ./server/src/environments/.env.production
+    environment:
+      NODE_ENV: production
+
+  frontend:
+    environment:
+      NODE_ENV: production
