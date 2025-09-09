@@ -19,7 +19,7 @@ export async function findTaskById(
     }
 
     const task = await taskRepository.findById(id);
-    if (!task) throw createNotFoundError("Tarea No encontrada");
+    if (!task) throw createNotFoundError("Task Not Found");
 
     return task;
 }
