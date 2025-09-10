@@ -1,5 +1,5 @@
-import { User } from "entities/User";
-import { UserRepository } from "services/UserRepository";
+import { User } from "../../entities/User";
+import { UserRepository } from "../../services/UserRepository";
 
 export interface MockedUserRepository extends UserRepository {
   users: User[];

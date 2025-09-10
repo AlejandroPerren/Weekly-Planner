@@ -1,6 +1,6 @@
 import { vi } from "vitest";
-import { Task } from "entities/Task";
-import { TaskRepository } from "services/TaskRepository";
+import { Task } from "../../entities/Task";
+import { TaskRepository } from "../../services/TaskRepository";
 
 export interface MockedTaksRepository extends TaskRepository {
   tasks: Task[];

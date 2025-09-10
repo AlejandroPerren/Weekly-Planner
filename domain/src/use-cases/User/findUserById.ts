@@ -1,10 +1,10 @@
-import { User } from "entities/User";
+import { User } from "../../entities/User";
 import {
   createInvalidDataError,
   createNotFoundError,
   NotFoundError,
-} from "errors/error";
-import { UserRepository } from "services/UserRepository";
+} from "../../errors/error";
+import { UserRepository } from "../../services/UserRepository";
 
 export interface UserFindByIdDependencies {
   userRepository: UserRepository;

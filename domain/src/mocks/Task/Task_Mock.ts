@@ -1,4 +1,4 @@
-import { Task } from "entities/Task";
+import { Task } from "../../entities/Task";
 
 export function createTaskMock(overrides?: Partial<Task>): Task {
   return {

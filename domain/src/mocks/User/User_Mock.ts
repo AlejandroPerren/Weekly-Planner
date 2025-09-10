@@ -1,4 +1,4 @@
-import { User } from "entities/User";
+import { User } from "../../entities/User";
 
 export function createUserMock(overrides?: Partial<User>): User {
   return {
