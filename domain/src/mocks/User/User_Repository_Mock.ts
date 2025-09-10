@@ -21,8 +21,8 @@ export function createUserRepositoryMock(
       this.users.push(newUser);
       return newUser;
     },
-    updateUser: async function (dni: string, user: User): Promise<User | null> {
-      const index = this.users.findIndex((u) => u.dni === dni);
+    updateUser: async function ( user: User): Promise<User | null> {
+      const index = this.users.findIndex((u) => u.dni === user.dni);
       if (index === -1) {
         return null;
       }

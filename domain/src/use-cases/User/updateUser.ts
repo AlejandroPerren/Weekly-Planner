@@ -23,7 +23,7 @@ export async function updateUser(
     throw createInvalidDataError("User must be a valid object");
   }
 
-  const updated = await userRepository.updateUser(dni, user);
+  const updated = await userRepository.updateUser(user);
 
   if (!updated) {
     throw createNotFoundError("User not found to update");
