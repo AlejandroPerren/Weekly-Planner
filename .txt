@@ -39,3 +39,6 @@ Todo queda más limpio, testeable y mantenible.
 
 
 Mejorar despues los testeos y las respuestasde alguna manera para retornar errors de manera mas dinamica
+
+
+falta configurar bien la db

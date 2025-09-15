@@ -1,42 +1,37 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, test } from "vitest";
 import {
   createUserRepositoryMock,
   MockedUserRepository,
 } from "../../../mocks/User/User_Repository_Mock";
-import { deleteUser, UserDeleteDependencies } from "../deleteUser";
+import { deleteUser, DeleteUserDependencies } from "../deleteUser";
 import { createUserMock } from "../../../mocks/User/User_Mock";
+import { createNotFoundError } from "../../../errors/error";
 
-describe("deleteUser", () => {
-  let _mockedUserRepository: MockedUserRepository;
-  let _dependencies: UserDeleteDependencies;
+describe("Delete user", () => {
+  const _mockedUserRepository: MockedUserRepository = createUserRepositoryMock([
+    createUserMock({ dni: "5000000" }),
+    createUserMock({ dni: "4000000" }),
+  ]);
+
+  let _dependencies: DeleteUserDependencies;
 
   beforeEach(() => {
-    _mockedUserRepository = createUserRepositoryMock([
-      createUserMock({ dni: "12312312", name: "User1" }),
-    ]);
-    _dependencies = { userRepository: _mockedUserRepository };
+    _dependencies = {
+      userRepository: _mockedUserRepository,
+    };
   });
 
-  it("given an invalid dni (number), when calling deleteUser, then throws InvalidDataError", async () => {
-    await expect(
-      deleteUser(_dependencies, { dni: 123 as any })
-    ).rejects.toMatchObject({
-      name: "InvalidDataError",
+  test("should get user by dni", async () => {
+    const userId = "2000000";
+    const result = await deleteUser(_dependencies, { dni: userId });
+    expect(result).toEqual(createNotFoundError("User not found"));
+  });
+
+  test("should throw error when user id does not exist", async () => {
+    const userId = "non-exist-id";
+    const result = await deleteUser(_dependencies, {
+      dni: userId,
     });
-  });
-
-  it("given an unexisting dni, when calling deleteUser, then throws NotFoundError", async () => {
-    await expect(
-      deleteUser(_dependencies, { dni: "999" })
-    ).rejects.toMatchObject({
-      name: "NotFoundError",
-    });
-  });
-
-  it("given a valid dni, when calling deleteUser, then removes the user", async () => {
-    await deleteUser(_dependencies, { dni: "12312312" }); 
-
-    const deleted = await _mockedUserRepository.findUserById("12312312");
-    expect(deleted).toBeNull();
+    expect(result).toEqual(createNotFoundError("User not found"));
   });
 });

@@ -5,7 +5,7 @@
 export interface AppError extends Error {
     name: string; // The specific name of the error (e.g., 'InvalidDataError')
     message: string; // A human-readable error message
-    httpStatus?: number; // Optional HTTP status code associated with the error
+    httpStatus: number; // Optional HTTP status code associated with the error
 }
 
 // --- Specific Error Interfaces ---

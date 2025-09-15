@@ -1,7 +1,7 @@
-import { createInvalidDataError, createNotFoundError } from "../../errors/error";
+import { createInvalidDataError, createNotFoundError, NotFoundError } from "../../errors/error";
 import { UserRepository } from "../../services/UserRepository";
 
-export interface UserDeleteDependencies {
+export interface DeleteUserDependencies {
   userRepository: UserRepository;
 }
 
@@ -10,15 +10,11 @@ export interface DeleteUserRequestModel {
 }
 
 export async function deleteUser(
-  { userRepository }: UserDeleteDependencies,
+  { userRepository }: DeleteUserDependencies,
   { dni }: DeleteUserRequestModel
-): Promise<void> {
-  if (typeof dni !== "string") {
-    throw createInvalidDataError("DNI must be a string");
-  }
-  const existingUser = await userRepository.findUserById(dni);
-  if (!existingUser) {
-    throw createNotFoundError("User not found");
-  }
+): Promise<void | NotFoundError > {
+  const user = await userRepository.findUserById(dni);
+  if (!user) return createNotFoundError("User not found");
   await userRepository.deleteUser(dni);
+  return
 }

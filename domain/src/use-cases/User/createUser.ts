@@ -19,24 +19,17 @@ export async function userCreate(
   { userRepository, cryptoRepository }: UserCreateDependencies,
   { dni, email, password, name }: UserCreateRequestModel
 ): Promise<User | InvalidDataError> {
-  // Validaciones
   const hasErrors = validateData(dni, email, password, name);
   if (hasErrors) throw hasErrors;
-
-  // Chequear si el dni ya existe
   const existingDni = await userRepository.findUserById(dni);
   if (existingDni) throw createInvalidDataError("DNI already in use");
-
-  // Chequear si el email ya existe
   if ("findUserByEmail" in userRepository && userRepository.findUserByEmail) {
     const existingEmail = await userRepository.findUserByEmail(email);
     if (existingEmail) throw createInvalidDataError("Email already in use");
   }
 
-  // Hashear la contraseña
   const hashedPassword = await cryptoRepository.hashPassword(password);
 
-  // Crear el nuevo usuario
   const user: User = {
     dni,
     email,

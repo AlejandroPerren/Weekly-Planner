@@ -1,50 +1,47 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, test } from "vitest";
+
+import { createNotFoundError } from "../../../errors/error";
 import {
   createUserRepositoryMock,
   MockedUserRepository,
 } from "../../../mocks/User/User_Repository_Mock";
-import { updateUser, UserUpdateDependencies } from "../updateUser";
 import { createUserMock } from "../../../mocks/User/User_Mock";
+import { updateUser, UserUpdateDependencies } from "../updateUser";
 
-describe("updateUser", () => {
-  let _mockedUserRepository: MockedUserRepository;
+describe("Update User", () => {
+  const _mockedUserRepository: MockedUserRepository = createUserRepositoryMock([
+    createUserMock({ dni: "5000000", name: "any-name" }),
+    createUserMock({ dni: "4000000" }),
+  ]);
+
   let _dependencies: UserUpdateDependencies;
 
   beforeEach(() => {
-    _mockedUserRepository = createUserRepositoryMock([
-      createUserMock({ dni: "123", name: "Old User" }),
-    ]);
-    _dependencies = { userRepository: _mockedUserRepository };
+    _dependencies = {
+      userRepository: _mockedUserRepository,
+    };
   });
 
-  it("given invalid dni (number), when calling updateUser, then throws InvalidDataError", async () => {
-    await expect(
-      updateUser(_dependencies, { dni: 123 as any, user: createUserMock({ dni: "123" }) })
-    ).rejects.toMatchObject({
-      name: "InvalidDataError",
+  test("should update a user", async () => {
+    const userToUpdate = createUserMock({
+      dni: "5000000",
+      name: "update-name",
+      email: "update-email",
     });
+    const result = await updateUser(_dependencies, { userToUpdate });
+
+    expect(result).toHaveProperty("name", userToUpdate.name);
+    expect(result).toHaveProperty("email", userToUpdate.email);
   });
 
-  it("given an unexisting dni, when calling updateUser, then throws NotFoundError", async () => {
-    await expect(
-      updateUser(_dependencies, {
-        dni: "999",
-        user: createUserMock({ dni: "999", name: "UserX" }),
-      })
-    ).rejects.toMatchObject({
-      name: "NotFoundError",
+  test("should throw error when user id does not exist", async () => {
+    const userToUpdate = createUserMock({
+      dni: "2000000",
+      name: "update-name",
     });
-  });
-
-  it("given a valid dni and user, when calling updateUser, then returns the updated user", async () => {
-    const updated = await updateUser(_dependencies, {
-      dni: "123",
-      user: { dni: "123", name: "Updated User", password: "1234", email: "a@b.com" },
+    const result = await updateUser(_dependencies, {
+      userToUpdate,
     });
-
-    expect(updated).toMatchObject({
-      dni: "123",
-      name: "Updated User",
-    });
+    expect(result).toEqual(createNotFoundError("User not found"));
   });
 });

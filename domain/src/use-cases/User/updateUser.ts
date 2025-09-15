@@ -1,33 +1,21 @@
 import { User } from "../../entities/User";
 import { createInvalidDataError, createNotFoundError, NotFoundError } from "../../errors/error";
 import { UserRepository } from "../../services/UserRepository";
-
 export interface UserUpdateDependencies {
   userRepository: UserRepository;
 }
 
-export interface UpdateUserRequestModel {
-  dni: string;
-  user: User;
+export interface UserUpdateRequestModel {
+  userToUpdate: User;
 }
 
 export async function updateUser(
   { userRepository }: UserUpdateDependencies,
-  { dni, user }: UpdateUserRequestModel
-): Promise<User> {
-  if (!dni || typeof dni !== "string") {
-    throw createInvalidDataError("User dni must be a string");
-  }
+  { userToUpdate }: UserUpdateRequestModel
+): Promise<Partial<User> | NotFoundError> {
+  const user = await userRepository.findUserById(userToUpdate.dni);
+  if (!user) return createNotFoundError("User not found");
+  const updatedBrand = await userRepository.updateUser(userToUpdate);
 
-  if (!user || typeof user !== "object") {
-    throw createInvalidDataError("User must be a valid object");
-  }
-
-  const updated = await userRepository.updateUser(user);
-
-  if (!updated) {
-    throw createNotFoundError("User not found to update");
-  }
-
-  return updated;
+  return updatedBrand;
 }

@@ -25,6 +25,12 @@ export function userService(): UserRepository {
       const user = await UserModel.findByPk(dni);
       return user ? _mapToUserResponseDTO(user) : null;
     },
+      findUserByEmail: async function (email: string) {
+      const user = await UserModel.findOne({where : {
+        email
+      }});
+      return user ? _mapToUserResponseDTO(user) : null;
+    },
     createUser: async function (user: User) {
       const newUser = await UserModel.create(user);
       return _mapToUserResponseDTO(newUser);
