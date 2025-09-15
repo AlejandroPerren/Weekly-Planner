@@ -1,55 +1,106 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, test, expect, beforeEach } from "vitest";
+import { User } from "../../../entities/User";
 import {
   createUserRepositoryMock,
   MockedUserRepository,
 } from "../../../mocks/User/User_Repository_Mock";
-import { createUser, UserCreateDependencies } from "../createUser";
-import { createUserMock } from "../../../mocks/User/User_Mock";
+import { createCryptoRepositoryMock } from "../../../mocks/Crypto/Crypto_Repository_Mock";
+import {
+  userCreate,
+  UserCreateDependencies,
+  UserCreateRequestModel,
+} from "../createUser";
 
-describe("createUser", () => {
-  let _mockedUserRepository: MockedUserRepository;
+describe("Create new user", () => {
+  const existingUser: User = {
+    dni: "12345678",
+    password: "12345678",
+    email: "existing@user.com",
+    name: "Existing User",
+  };
+
+  const _mockedUserRepository: MockedUserRepository = createUserRepositoryMock([
+    existingUser,
+  ]);
+
   let _dependencies: UserCreateDependencies;
 
   beforeEach(() => {
-    _mockedUserRepository = createUserRepositoryMock([]);
-    _dependencies = { userRepository: _mockedUserRepository };
+    _dependencies = {
+      userRepository: _mockedUserRepository,
+      cryptoRepository: createCryptoRepositoryMock(),
+    };
   });
 
-  it("given an invalid user (null), when calling createUser, then throws InvalidDataError", async () => {
-    await expect(
-      createUser(_dependencies, { user: null as any })
-    ).rejects.toMatchObject({
-      name: "InvalidDataError",
-    });
+  test("With an email already in use, fails with InvalidData", async () => {
+    const payload: UserCreateRequestModel = {
+      dni: "87654321",
+      email: "existing@user.com",
+      password: "12345678",
+      name: "Test User",
+    };
+    await expect(userCreate(_dependencies, payload)).rejects.toThrow(
+      "Email already in use"
+    );
   });
 
-  it("given a user with missing name, when calling createUser, then throws InvalidDataError", async () => {
-    await expect(
-      createUser(_dependencies, { user: { dni: "123", password: "1234", email: "test@test.com" } as any })
-    ).rejects.toMatchObject({
-      name: "InvalidDataError",
-    });
+  test("With an empty email, fails with InvalidData", async () => {
+    const payload: UserCreateRequestModel = {
+      dni: "87654321",
+      email: "",
+      password: "12345678",
+      name: "Test User",
+    };
+    await expect(userCreate(_dependencies, payload)).rejects.toThrow(
+      "Email must be not empty"
+    );
   });
 
-  it("given a user with non-string dni, when calling createUser, then throws InvalidDataError", async () => {
-    await expect(
-      createUser(_dependencies, { user: { name: "Test", dni: 123 as any, password: "1234", email: "a@b.com" } })
-    ).rejects.toMatchObject({
-      name: "InvalidDataError",
-    });
+  test("With an empty password, fails with InvalidData", async () => {
+    const payload: UserCreateRequestModel = {
+      dni: "87654321",
+      email: "valid@email.com",
+      password: "",
+      name: "Test User",
+    };
+    await expect(userCreate(_dependencies, payload)).rejects.toThrow(
+      "Password must be not empty"
+    );
   });
 
-  it("given valid user data, when calling createUser, then returns the created user", async () => {
-    const newUser = createUserMock({ dni: "123", name: "User Test" });
-    const result = await createUser(_dependencies, { user: newUser });
+  test("With an empty name, fails with InvalidData", async () => {
+    const payload: UserCreateRequestModel = {
+      dni: "87654321",
+      email: "valid@email.com",
+      password: "12345678",
+      name: "",
+    };
 
-    expect(result).toMatchObject({
-      dni: "123",
-      name: "User Test",
-      password: expect.any(String),
-      email: expect.any(String),
-    });
+    await expect(userCreate(_dependencies, payload)).rejects.toThrow(
+      "Name must be not empty"
+    );
+  });
+
+  test("With valid data, registers the user successfully", async () => {
+    const payload: UserCreateRequestModel = {
+      dni: "87654321",
+      email: "valid@email.com",
+      password: "12345678",
+      name: "Test User",
+    };
+
+    const result = await userCreate(_dependencies, payload);
+    const user = await _mockedUserRepository.findUserById(payload.dni);
+
+    expect(user).not.toBeNull();
+    expect(result).toEqual(user);
+    if (user?.password) {
+      expect(
+        await _dependencies.cryptoRepository.comparePassword(
+          payload.password,
+          user.password
+        )
+      ).toBe(true);
+    }
   });
 });
-
-

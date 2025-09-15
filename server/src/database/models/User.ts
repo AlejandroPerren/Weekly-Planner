@@ -1,6 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import sequelizeConnection from "../connection";
-import { Task } from "./task"; 
+import { Task } from "./Task"; 
 
 interface UserAttributes {
   name: string;

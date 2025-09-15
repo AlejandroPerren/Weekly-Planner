@@ -1,5 +1,5 @@
 import { UserRepository } from "@domain/services/UserRepository";
-import { User as UserModel } from "../database/models/user";
+import { User as UserModel } from "../database/models/User";
 import { User } from "@domain/entities/User";
 import {
   createBadRequestError,

@@ -21,7 +21,10 @@ export function createUserRepositoryMock(
       this.users.push(newUser);
       return newUser;
     },
-    updateUser: async function ( user: User): Promise<User | null> {
+    findUserByEmail: async function (email: string): Promise<User | null> {
+      return this.users.find((u) => u.email === email) || null;
+    },
+    updateUser: async function (user: User): Promise<User | null> {
       const index = this.users.findIndex((u) => u.dni === user.dni);
       if (index === -1) {
         return null;

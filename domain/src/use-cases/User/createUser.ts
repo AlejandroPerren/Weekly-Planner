@@ -1,38 +1,68 @@
 import { User } from "../../entities/User";
-import { createInvalidDataError } from "../../errors/error";
+import { createInvalidDataError, InvalidDataError } from "../../errors/error";
 import { UserRepository } from "../../services/UserRepository";
+import { CryptoRepository } from "../../services/CryptoRepository";
 
 export interface UserCreateDependencies {
   userRepository: UserRepository;
+  cryptoRepository: CryptoRepository;
 }
 
-export interface CreateUserRequestModel {
-  user: User;
+export interface UserCreateRequestModel {
+  dni: string;
+  email: string;
+  password: string;
+  name: string;
 }
 
-export async function createUser(
-  { userRepository }: UserCreateDependencies,
-  { user }: CreateUserRequestModel
-): Promise<User> {
-  if (!user || typeof user !== "object") {
-    throw createInvalidDataError("User must be a valid object");
+export async function userCreate(
+  { userRepository, cryptoRepository }: UserCreateDependencies,
+  { dni, email, password, name }: UserCreateRequestModel
+): Promise<User | InvalidDataError> {
+  // Validaciones
+  const hasErrors = validateData(dni, email, password, name);
+  if (hasErrors) throw hasErrors;
+
+  // Chequear si el dni ya existe
+  const existingDni = await userRepository.findUserById(dni);
+  if (existingDni) throw createInvalidDataError("DNI already in use");
+
+  // Chequear si el email ya existe
+  if ("findUserByEmail" in userRepository && userRepository.findUserByEmail) {
+    const existingEmail = await userRepository.findUserByEmail(email);
+    if (existingEmail) throw createInvalidDataError("Email already in use");
   }
 
-  if (!user.name || typeof user.name !== "string") {
-    throw createInvalidDataError("User name must be a string");
-  }
+  // Hashear la contraseña
+  const hashedPassword = await cryptoRepository.hashPassword(password);
 
-  if (!user.dni || typeof user.dni !== "string") {
-    throw createInvalidDataError("User dni must be a string");
-  }
-
-  if (!user.password || typeof user.password !== "string") {
-    throw createInvalidDataError("User password must be a string");
-  }
-
-  if (!user.email || typeof user.email !== "string") {
-    throw createInvalidDataError("User email must be a string");
-  }
+  // Crear el nuevo usuario
+  const user: User = {
+    dni,
+    email,
+    password: hashedPassword,
+    name,
+  };
 
   return await userRepository.createUser(user);
+}
+
+function validateData(
+  dni: string,
+  email: string,
+  password: string,
+  name: string
+): InvalidDataError | void {
+  if (!dni || dni.trim() === "") {
+    return createInvalidDataError("DNI must not be empty");
+  }
+  if (!email || email.trim() === "") {
+    return createInvalidDataError("Email must be not empty");
+  }
+  if (!password || password.trim() === "") {
+    return createInvalidDataError("Password must be not empty");
+  }
+  if (!name || name.trim() === "") {
+    return createInvalidDataError("Name must be not empty");
+  }
 }
