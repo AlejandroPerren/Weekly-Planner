@@ -1,3 +1,41 @@
 tabla intermedia con datos de la tarea, ejem referencias a buscar links importantes a no perder y algun otra cosa como investigar esto o buscar esto
 
 modificar el docker compose para que cree una base de datos mejor y mas especifica
+
+integrar Swagger, Webpack y mas
+
+
+El flujo es:
+
+Router → dirige la petición a categoryController().getAllCategories.
+
+Controlador → llama a listCategory({ categoryRepository: categoryService() }).
+
+Caso de uso listCategory → usa categoryRepository para traer datos.
+
+Service / Repository (categoryService) → hace la query real a la base de datos.
+
+DB → devuelve las filas de la tabla categories.
+
+Caso de uso → recibe los datos y los devuelve.
+
+Controlador → arma el JSON y responde al cliente.
+
+📌 ¿Por qué separar todo?
+
+Controller → se encarga de la capa HTTP (Request/Response).
+
+Use Case → maneja la lógica de negocio (qué hacer con los datos).
+
+Service/Repository → maneja el acceso a la base de datos.
+
+Así:
+
+Si cambiás de MySQL a MongoDB → solo tocas el service, no el resto.
+
+Si mañana tenés otra app (ej: móvil) que usa los mismos casos de uso → reaprovechás la lógica de negocio sin duplicar.
+
+Todo queda más limpio, testeable y mantenible.
+
+
+Mejorar despues los testeos y las respuestasde alguna manera para retornar errors de manera mas dinamica
