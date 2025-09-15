@@ -6,7 +6,7 @@ import {
 import { findTaskById, TaskFindByIdDependencies } from "../TaskFindById";
 import { createTaskMock } from "../../../mocks/Task/Task_Mock";
 
-describe("findTaskById", () => {
+describe("find Task By Id", () => {
   const _mockedTaksRepository: MockedTaksRepository = createTaskRepositoryMock([
     createTaskMock({ id: 0 }),
     createTaskMock({ id: 1 }),
