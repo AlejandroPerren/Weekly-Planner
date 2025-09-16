@@ -1,26 +1,22 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import sequelizeConnection from "../connection";
-import { Task } from "./Task"; 
+import { Task } from "./Task";
 
 interface UserAttributes {
-  name: string;
   dni: string;
+  name: string;
   password: string;
   email: string;
 }
 
 type UserCreationAttributes = Optional<UserAttributes, "dni">;
 
-export class User
-  extends Model<UserAttributes, UserCreationAttributes>
-  implements UserAttributes
-{
-  public name!: string;
+export class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
   public dni!: string;
+  public name!: string;
   public password!: string;
   public email!: string;
 
-  // Relaciones
   static associate() {
     User.hasMany(Task, {
       foreignKey: "createdBy",
@@ -31,14 +27,14 @@ export class User
 
 User.init(
   {
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     dni: {
       type: DataTypes.STRING,
       allowNull: false,
-      primaryKey: true,
+      primaryKey: true, 
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     password: {
       type: DataTypes.STRING,
@@ -53,5 +49,6 @@ User.init(
     sequelize: sequelizeConnection,
     modelName: "User",
     tableName: "Users",
+    timestamps: true,
   }
 );

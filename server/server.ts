@@ -6,6 +6,8 @@ import router from "./src/routes";
 import express, { NextFunction, Request, Response } from "express";
 import { NODE_ENV, PORT } from "./env";
 import sequelizeConnection from "./src/database/connection";
+import { User } from "./src/database/models/User";
+import { Task } from "./src/database/models/Task";
 
 dotenv.config({
   path: path.resolve(__dirname, "./environments/.env"),
@@ -37,20 +39,20 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 sequelizeConnection
   .authenticate()
   .then(() => {
-    console.log("Base de datos conectada");
+    console.log("✅ Base de datos conectada");
+
+    User.associate?.();
+    Task.associate?.();
+
+    return sequelizeConnection.sync({ force: true });
+  })
+  .then(() => {
+    console.log("✅ Tablas recreadas desde cero");
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+    });
   })
   .catch((error) => {
-    console.error("Error al conectar a la base de datos:", error);
+    console.error("❌ Error al conectar/sincronizar:", error);
   });
-
-// Start server
-try {
-  app.listen(PORT, () => {
-    console.log(
-      `Servidor corriendo en el puerto ${PORT} | MODO: ${NODE_ENV.toUpperCase()}`
-    );
-  });
-} catch (error) {
-  console.error("\n ERROR: Error al iniciar la aplicación:", error);
-  process.exit(1);
-}

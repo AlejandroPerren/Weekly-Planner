@@ -6,20 +6,20 @@ const { DB_DIALECT, DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USERNAME } = requ
 
 // Export the database configuration so that the Sequelize CLI can read it.
 module.exports = {
-   development: {
-    username: DB_USERNAME || "user",
-    password: DB_PASSWORD || "password",
-    database: DB_NAME || "weeklyplanner",
-    host: DB_HOST || "localhost", 
-    port: DB_PORT || 3307,
-    dialect: DB_DIALECT
+  development: {
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    dialect: process.env.DB_DIALECT
   },
   production: {
-    username: DB_USERNAME,
-    password: DB_PASSWORD,
-    database: DB_NAME,
-    host: DB_HOST || "db",
-    port: DB_PORT || 3306,
-    dialect: DB_DIALECT
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    dialect: process.env.DB_DIALECT
   }
 };

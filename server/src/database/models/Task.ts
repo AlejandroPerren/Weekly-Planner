@@ -1,20 +1,17 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import sequelizeConnection from "../connection";
-import { User } from "./User"; 
+import { User } from "./User";
 
 interface TaskAttributes {
   id: number;
   name: string;
   isActive: boolean;
-  createdBy: string; 
+  createdBy: string;
 }
 
 type TaskCreationAttributes = Optional<TaskAttributes, "id">;
 
-export class Task
-  extends Model<TaskAttributes, TaskCreationAttributes>
-  implements TaskAttributes
-{
+export class Task extends Model<TaskAttributes, TaskCreationAttributes> implements TaskAttributes {
   public id!: number;
   public name!: string;
   public isActive!: boolean;
@@ -44,13 +41,20 @@ Task.init(
       allowNull: false,
     },
     createdBy: {
-      type: DataTypes.STRING, 
+      type: DataTypes.STRING,
       allowNull: false,
+      references: {
+        model: "Users",
+        key: "dni",
+      },
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
     },
   },
   {
     sequelize: sequelizeConnection,
     modelName: "Task",
     tableName: "Tasks",
+    timestamps: true,
   }
 );
