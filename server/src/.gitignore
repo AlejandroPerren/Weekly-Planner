@@ -1,9 +1,0 @@
-/node_modules
-/dist
-/.vscode
-/coverage
-
-# Ignorar archivos de entorno
-.env
-.env.*
-!.env.example
