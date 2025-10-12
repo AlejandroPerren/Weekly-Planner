@@ -1,14 +1,30 @@
 import React, { useMemo, useState } from "react";
 import type { Column } from "../types/column.type";
 import ColumnContainer from "../components/ColumnContainer";
-import { DndContext, DragOverlay, type DragStartEvent } from "@dnd-kit/core";
-import { SortableContext } from "@dnd-kit/sortable";
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragStartEvent,
+} from "@dnd-kit/core";
+import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 
 const KanbanBoard = () => {
   const [columns, setColumns] = useState<Column[]>([]);
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 3,
+      },
+    })
+  );
 
   function createNewColumn() {
     const columnToAdd: Column = {
@@ -25,9 +41,33 @@ const KanbanBoard = () => {
     }
   }
 
+  function onDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+
+    if (!over) return;
+    const activeColumId = active.id;
+    const overColumnId = over.id;
+
+    if (activeColumId === overColumnId) return;
+
+    setColumns((columns) => {
+      const activeColumIndex = columns.findIndex(
+        (col) => col.id === activeColumId
+      );
+      const overColumnIndex = columns.findIndex(
+        (col) => col.id === overColumnId
+      );
+      return arrayMove(columns, activeColumIndex, overColumnIndex);
+    });
+  }
+
   return (
     <div className="m-auto text-white bg-black min-h-screen w-full px-[40px] items-center">
-      <DndContext onDragStart={onDragStart}>
+      <DndContext
+        sensors={sensors}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+      >
         <div className="m-auto flex gap-4">
           <div className="flex gap-2">
             <SortableContext items={columns}>
