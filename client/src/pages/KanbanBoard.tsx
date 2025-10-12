@@ -61,6 +61,13 @@ const KanbanBoard = () => {
     });
   }
 
+  function updateColumn(id: number, title: string) {
+    const newColumns = columns.map((col) =>
+      col.id === id ? { ...col, title } : col
+    );
+    setColumns(newColumns);
+  }
+
   return (
     <div className="m-auto text-white bg-black min-h-screen w-full px-[40px] items-center">
       <DndContext
@@ -72,7 +79,11 @@ const KanbanBoard = () => {
           <div className="flex gap-2">
             <SortableContext items={columns}>
               {columns.map((col) => (
-                <ColumnContainer column={col} key={col.id} />
+                <ColumnContainer
+                  column={col}
+                  updateColumn={updateColumn}
+                  key={col.id}
+                />
               ))}
             </SortableContext>
           </div>
@@ -88,7 +99,12 @@ const KanbanBoard = () => {
         </div>
         {createPortal(
           <DragOverlay>
-            {activeColumn && <ColumnContainer column={activeColumn} />}
+            {activeColumn && (
+              <ColumnContainer
+                updateColumn={updateColumn}
+                column={activeColumn}
+              />
+            )}
           </DragOverlay>,
           document.body
         )}
