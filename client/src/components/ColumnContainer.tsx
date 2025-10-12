@@ -2,13 +2,22 @@ import React, { useState } from "react";
 import type { Column } from "../types/column.type";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import type { Task } from "../types/task.types";
+import TaskCard from "./TaskCard";
 interface columnProps {
   column: Column;
   updateColumn: (id: number, title: string) => void;
   //Delete
+  createTask: (columnId: number) => void;
+  tasks: Task[];
 }
 
-const ColumnContainer = ({ column, updateColumn }: columnProps) => {
+const ColumnContainer = ({
+  column,
+  updateColumn,
+  createTask,
+  tasks,
+}: columnProps) => {
   const [editMode, setEditMode] = useState(false);
 
   const {
@@ -81,7 +90,22 @@ const ColumnContainer = ({ column, updateColumn }: columnProps) => {
         </div>
         <button>Delete</button>
       </div>
-      <div className="">Content</div>
+      <div className="flex flex-grow flex-col overflow-y-auto p-2 gap-2">
+        {tasks.map((task) => (
+          <TaskCard key={task.id} task={task} />
+        ))}
+      </div>
+
+      <div>
+        <button
+          className="flex gap-2 items-center rounded-md p-4 hover:text-rose-500"
+          onClick={() => {
+            createTask(column.id);
+          }}
+        >
+          Añadir Tareas
+        </button>
+      </div>
     </div>
   );
 };
