@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { Column } from "../types/column.type";
 import ColumnContainer from "../components/ColumnContainer";
 import {
@@ -128,16 +128,16 @@ const KanbanBoard = () => {
   }
 
   return (
-    <div className="m-auto text-white bg-black min-h-screen w-full px-[40px] items-center">
+    <div className="m-auto text-white bg-gray-950 min-h-screen w-full px-4 md:px-10 items-center">
       <DndContext
         sensors={sensors}
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
         onDragOver={onDragOver}
       >
-        <div className="m-auto flex gap-4">
-          <div className="flex gap-2">
-            <SortableContext items={columns}>
+        <div className="m-auto flex flex-col md:flex-row gap-4" >
+          <div className="flex gap-4 mt-5">
+            <SortableContext items={columnsId}>
               {columns.map((col) => (
                 <ColumnContainer
                   createTask={createTask}
@@ -154,9 +154,9 @@ const KanbanBoard = () => {
             onClick={() => {
               createNewColumn();
             }}
-            className="h-[60px] w-[350px] cursor-pointer text-white"
+            className="h-[60px] w-full md:w-[350px] cursor-pointer text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md transition-colors duration-300"
           >
-            AddColumn
+            Add Column
           </button>
         </div>
         {createPortal(
